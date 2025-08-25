@@ -14,6 +14,8 @@ const API = (function() {
         setTimeout(clearMessage, 2000);
     }
 
+    const API_URL = 'http://localhost:8080/api/v1/films';
+
     function createFilm() {
         const titleInput = document.getElementById('filmTitle');
         const ratingInput = document.getElementById('filmRating');
@@ -35,7 +37,7 @@ const API = (function() {
             return false;
         }
 
-        fetch('/api/v1/films', {
+        fetch(API_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ title, rating })
@@ -62,7 +64,7 @@ const API = (function() {
         tbody.innerHTML = '';
         clearMessage();
 
-        fetch('/api/v1/films')
+        fetch(API_URL)
             .then(res => res.json())
             .then(data => {
                 if (!Array.isArray(data) || data.length === 0) {
