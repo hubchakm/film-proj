@@ -48,6 +48,15 @@ const Auth = (() => {
         if (localStorage.getItem('token')) {
             window.location.href = 'index.html';
         }
+        const toggle = document.getElementById('toggleRegPassword');
+        const password = document.getElementById('regPassword');
+        if (toggle && password) {
+            toggle.addEventListener('click', () => {
+                const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+                password.setAttribute('type', type);
+                toggle.textContent = type === 'password' ? '👁️' : '🙈';
+            });
+        }
     });
 
     return { register };
