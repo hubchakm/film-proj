@@ -12,9 +12,11 @@ const mongoUrl = process.env.MONGO_URL || 'mongodb://mongo:27017/filmsdb';
 mongoose.connect(mongoUrl);
 
 const FilmSchema = new mongoose.Schema({
-  title: { type: String, required: true, unique: true },
-  rating: { type: Number, required: true }
+  title: { type: String, required: true },
+  rating: { type: Number, required: true },
+  user: { type: String, required: true }
 });
+FilmSchema.index({ user: 1, title: 1 }, { unique: true });
 
 const UserSchema = new mongoose.Schema({
   name: { type: String, required: true },
@@ -42,9 +44,9 @@ function verifyToken(req, res, next) {
   });
 }
 
-app.get('/api/v1/films', async (req, res) => {
+app.get('/api/v1/films', verifyToken, async (req, res) => {
   try {
-    const films = await Film.find().sort({ _id: 1 });
+    const films = await Film.find({ user: req.user.username }).sort({ _id: 1 });
     if (films.length === 0) {
       return res.status(404).json({ message: 'No films available' });
     }
@@ -68,13 +70,16 @@ app.post('/api/v1/films', verifyToken, async (req, res) => {
   }
 
   try {
-    const existing = await Film.findOne({ title: new RegExp(`^${title}$`, 'i') });
+    const existing = await Film.findOne({
+      user: req.user.username,
+      title: new RegExp(`^${title}$`, 'i')
+    });
     if (existing) {
       existing.rating = numRating;
       await existing.save();
       return res.json({ message: 'Film rating updated successfully' });
     }
-    const film = new Film({ title, rating: numRating });
+    const film = new Film({ title, rating: numRating, user: req.user.username });
     await film.save();
     res.status(201).json({ message: 'Film added successfully' });
   } catch (err) {
@@ -117,6 +122,15 @@ app.post('/api/v1/login', async (req, res) => {
     }
     const token = jwt.sign({ username: user.username }, SECRET_KEY, { expiresIn: '1h' });
     res.json({ token });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+app.delete('/api/v1/films', verifyToken, async (req, res) => {
+  try {
+    await Film.deleteMany({ user: req.user.username });
+    res.json({ message: 'Films cleared successfully' });
   } catch (err) {
     res.status(500).json({ message: 'Server error' });
   }
