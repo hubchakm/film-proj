@@ -44,9 +44,24 @@ function verifyToken(req, res, next) {
   });
 }
 
-app.get('/api/v1/films', verifyToken, async (req, res) => {
+function optionalToken(req, res, next) {
+  const bearerHeader = req.headers['authorization'];
+  if (!bearerHeader) {
+    return next();
+  }
+  const token = bearerHeader.split(' ')[1];
+  jwt.verify(token, SECRET_KEY, { algorithms: ['HS256'] }, (err, decoded) => {
+    if (!err) {
+      req.user = decoded;
+    }
+    next();
+  });
+}
+
+app.get('/api/v1/films', optionalToken, async (req, res) => {
   try {
-    const films = await Film.find({ user: req.user.username }).sort({ _id: 1 });
+    const query = req.user ? { user: req.user.username } : {};
+    const films = await Film.find(query).sort({ _id: 1 });
     if (films.length === 0) {
       return res.status(404).json({ message: 'No films available' });
     }
@@ -82,6 +97,29 @@ app.post('/api/v1/films', verifyToken, async (req, res) => {
     const film = new Film({ title, rating: numRating, user: req.user.username });
     await film.save();
     res.status(201).json({ message: 'Film added successfully' });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+app.put('/api/v1/films/:id', verifyToken, async (req, res) => {
+  const { rating } = req.body;
+  if (rating === undefined || rating === null || rating === '') {
+    return res.status(400).json({ message: 'Rating is required' });
+  }
+  const numRating = Number(rating);
+  if (isNaN(numRating) || numRating < 1 || numRating > 10) {
+    return res.status(400).json({ message: 'Rating must be between 1 and 10' });
+  }
+
+  try {
+    const film = await Film.findOne({ _id: req.params.id, user: req.user.username });
+    if (!film) {
+      return res.status(404).json({ message: 'Film not found' });
+    }
+    film.rating = numRating;
+    await film.save();
+    res.json({ message: 'Film rating updated successfully' });
   } catch (err) {
     res.status(500).json({ message: 'Server error' });
   }
@@ -137,6 +175,6 @@ app.delete('/api/v1/films', verifyToken, async (req, res) => {
 });
 
 const port = process.env.PORT || 3000;
-app.listen(port, () => {
+app.listen(port, '0.0.0.0', () => {
   console.log(`Films service listening on port ${port}`);
 });

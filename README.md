@@ -24,6 +24,36 @@ all services are available through a single port.
    docker-compose down
    ```
 
+## Access from other devices
+To use the site or API from phones or other computers on your local network:
+
+1. Find your computer's local IP address.
+   - Windows: run `ipconfig` and look for the IPv4 address.
+   - macOS/Linux: run `ifconfig` or `ip addr`.
+2. Start the project as described above.
+3. From the other device, browse to `http://YOUR_IP:8080` replacing `YOUR_IP` with the address from step 1.
+4. If the films service is run separately, set the environment variable `FILMS_SERVICE_URL` before starting the web app:
+   ```bash
+   export FILMS_SERVICE_URL=http://YOUR_IP:3001
+   ```
+
+The API base URL for mobile apps should also use the IP address, e.g. `http://YOUR_IP:8080/api/v1`.
+
+## Mobile App
+A minimal React Native client is provided in the `mobile/` directory. It allows logging in,
+listing films, adding new films and updating ratings.
+
+### Running the app
+1. Install [Node.js](https://nodejs.org/) and [Expo](https://docs.expo.dev/get-started/installation/).
+2. In the `mobile` folder run:
+   ```bash
+   npm install
+   npm start
+   ```
+3. When prompted, open the app on your mobile device using the Expo Go app or an emulator.
+4. Edit `mobile/App.js` and replace `YOUR_IP` in `API_BASE` with the IP address of your computer so the app can reach the API.
+
+
 ## Project Structure
 - `Dockerfile` – Docker setup for the web front end
 - `films/` – Films API service (includes its own `Dockerfile`)
