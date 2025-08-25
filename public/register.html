@@ -13,7 +13,10 @@
         <form id="registerForm" onsubmit="return Auth.register()">
             <input type="text" id="regName" placeholder="Name" required autocomplete="off">
             <input type="text" id="regUsername" placeholder="Username" required autocomplete="off">
-            <input type="password" id="regPassword" placeholder="Password" required>
+            <div class="password-container">
+                <input type="password" id="regPassword" placeholder="Password" required>
+                <span id="toggleRegPassword" class="password-toggle">👁️</span>
+            </div>
             <button type="submit">Register</button>
         </form>
         <p>Already have an account? <a href="login.html">Login</a></p>
