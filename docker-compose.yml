@@ -10,6 +10,7 @@ services:
     build: ./films
     environment:
       - MONGO_URL=mongodb://mongo:27017/filmsdb
+      - JWT_SECRET=change_me
     ports:
       - "3001:3000"
     depends_on:

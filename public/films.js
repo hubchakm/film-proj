@@ -14,9 +14,22 @@ const API = (function() {
         setTimeout(clearMessage, 2000);
     }
 
-    const API_BASE = 'http://localhost:8080/api/v1';
+    const API_BASE = '/api/v1';
     const API_URL = `${API_BASE}/films`;
     let jwtToken = localStorage.getItem('token') || '';
+
+    if (!jwtToken) {
+        window.location.href = 'login.html';
+    }
+
+    async function handleResponse(res) {
+        const contentType = res.headers.get('content-type') || '';
+        const data = contentType.includes('application/json') ? await res.json() : await res.text();
+        if (!res.ok) {
+            throw new Error(data.message || data || 'Request failed');
+        }
+        return data;
+    }
 
     function createFilm() {
         const titleInput = document.getElementById('filmTitle');
@@ -51,24 +64,13 @@ const API = (function() {
             },
             body: JSON.stringify({ title, rating })
         })
-            .then(res => {
-                setTimeout(() => {
-                    if (res.ok) {
-                        showMessage('Film saved successfully!');
-                    } else {
-                        showMessage(`${res.status} ${res.statusText}`, true);
-                    }
-                }, 0);
-                if (!res.ok) {
-                    return res.json().then(data => Promise.reject(data.message || 'Failed to add film.'));
-                }
-                return res.json();
-            })
+            .then(handleResponse)
             .then(() => {
+                showMessage('Film saved successfully!');
                 titleInput.value = '';
                 ratingInput.value = '';
             })
-            .catch(err => showMessage(err, true));
+            .catch(err => showMessage(err.message || err, true));
 
         return false;
     }
@@ -80,12 +82,7 @@ const API = (function() {
         clearMessage();
 
         fetch(API_URL)
-            .then(res => {
-                if (!res.ok) {
-                    return res.json().then(data => Promise.reject(data.message || 'Failed to retrieve films.'));
-                }
-                return res.json();
-            })
+            .then(handleResponse)
             .then(data => {
                 data.forEach((film, idx) => {
                     const row = document.createElement('tr');
@@ -100,64 +97,22 @@ const API = (function() {
             })
             .catch(err => {
                 table.classList.add('hidden');
-                showMessage(err, true);
+                showMessage(err.message || err, true);
             });
 
         return false;
     }
 
-    function login() {
-        const username = document.getElementById('loginUsername').value.trim();
-        const password = document.getElementById('loginPassword').value.trim();
-        clearMessage();
-        fetch(`${API_BASE}/login`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, password })
-        })
-            .then(res => {
-                if (!res.ok) {
-                    return res.json().then(data => Promise.reject(data.message || 'Login failed'));
-                }
-                return res.json();
-            })
-            .then(data => {
-                jwtToken = data.token;
-                localStorage.setItem('token', jwtToken);
-                showMessage('Logged in successfully');
-            })
-            .catch(err => showMessage(err, true));
-        return false;
-    }
-
-    function register() {
-        const name = document.getElementById('regName').value.trim();
-        const username = document.getElementById('regUsername').value.trim();
-        const password = document.getElementById('regPassword').value.trim();
-        clearMessage();
-        fetch(`${API_BASE}/register`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name, username, password })
-        })
-            .then(res => {
-                if (!res.ok) {
-                    return res.json().then(data => Promise.reject(data.message || 'Registration failed'));
-                }
-                return res.json();
-            })
-            .then(() => {
-                showMessage('User registered successfully');
-            })
-            .catch(err => showMessage(err, true));
-        return false;
+    function logout() {
+        localStorage.removeItem('token');
+        jwtToken = '';
+        window.location.href = 'login.html';
     }
 
     return {
         createFilm,
         getFilms,
-        login,
-        register
+        logout
     };
 })();
 

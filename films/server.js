@@ -2,8 +2,10 @@ const express = require('express');
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
+const helmet = require('helmet');
 
 const app = express();
+app.use(helmet());
 app.use(express.json());
 
 const mongoUrl = process.env.MONGO_URL || 'mongodb://mongo:27017/filmsdb';
@@ -23,7 +25,7 @@ const UserSchema = new mongoose.Schema({
 const Film = mongoose.model('Film', FilmSchema);
 const User = mongoose.model('User', UserSchema);
 
-const SECRET_KEY = 'secretkey';
+const SECRET_KEY = process.env.JWT_SECRET || 'development-secret';
 
 function verifyToken(req, res, next) {
   const bearerHeader = req.headers['authorization'];
@@ -31,7 +33,7 @@ function verifyToken(req, res, next) {
     return res.sendStatus(403);
   }
   const token = bearerHeader.split(' ')[1];
-  jwt.verify(token, SECRET_KEY, (err, decoded) => {
+  jwt.verify(token, SECRET_KEY, { algorithms: ['HS256'] }, (err, decoded) => {
     if (err) {
       return res.sendStatus(403);
     }
@@ -113,7 +115,7 @@ app.post('/api/v1/login', async (req, res) => {
     if (!valid) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
-    const token = jwt.sign({ username: user.username }, SECRET_KEY);
+    const token = jwt.sign({ username: user.username }, SECRET_KEY, { expiresIn: '1h' });
     res.json({ token });
   } catch (err) {
     res.status(500).json({ message: 'Server error' });
