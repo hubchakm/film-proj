@@ -1,0 +1,20 @@
+diff --git a/node_modules/react-native/src/private/specs/components/DebuggingOverlayNativeComponent.js b/node_modules/react-native/src/private/specs/components/DebuggingOverlayNativeComponent.js
+index 1234567..89abcde 100644
+--- a/node_modules/react-native/src/private/specs/components/DebuggingOverlayNativeComponent.js
++++ b/node_modules/react-native/src/private/specs/components/DebuggingOverlayNativeComponent.js
+@@
+ interface NativeCommands {
+   +highlightTraceUpdates: (
+     viewRef: React.ElementRef<DebuggingOverlayNativeComponentType>,
+-    updates: $ReadOnlyArray<TraceUpdate>,
++    updates: ReadonlyArray<TraceUpdate>,
+   ) => void;
+   +highlightElements: (
+     viewRef: React.ElementRef<DebuggingOverlayNativeComponentType>,
+-    elements: $ReadOnlyArray<ElementRectangle>,
++    elements: ReadonlyArray<ElementRectangle>,
+   ) => void;
+   +clearElementsHighlights: (
+     viewRef: React.ElementRef<DebuggingOverlayNativeComponentType>,
+   ) => void;
+ }
