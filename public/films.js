@@ -1,6 +1,8 @@
 // public/films.js
 
-const API = (function() {
+// Expose the API helper on the global window object so that inline
+// event handlers in the HTML can access its methods.
+window.API = (function() {
     function clearMessage() {
         const msg = document.getElementById('successMessage');
         msg.textContent = '';
