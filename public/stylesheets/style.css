@@ -1,27 +1,32 @@
 
 /* public/stylesheets/style.css */
+@import url('https://fonts.googleapis.com/css2?family=Bangers&family=Comic+Neue:wght@400;700&display=swap');
 
 body {
-    background: #f5f8fa;
-    font-family: 'Segoe UI', Arial, sans-serif;
+    background: radial-gradient(circle at top left, #fef08a, #f9a8d4, #93c5fd);
+    font-family: 'Comic Neue', cursive;
     margin: 0;
     padding: 0;
+    min-height: 100vh;
 }
 
 .container {
-    max-width: 430px;
-    margin: 50px auto;
+    max-width: 600px;
+    margin: 60px auto;
     background: #fff;
     padding: 2rem 2.5rem 2rem 2.5rem;
-    box-shadow: 0 2px 16px 0 rgba(44,62,80,.11);
-    border-radius: 14px;
+    border: 4px solid #000;
+    border-radius: 12px;
+    box-shadow: 6px 6px 0 #000;
 }
 
 h1 {
     text-align: center;
-    color: #020b86;
+    color: #ff005c;
     margin-bottom: 2rem;
-    letter-spacing: 1px;
+    letter-spacing: 2px;
+    font-family: 'Bangers', cursive;
+    text-shadow: 4px 4px 0 #000;
 }
 
 form {
@@ -32,36 +37,45 @@ form {
 }
 
 input[type="text"],
-input[type="password"] {
+input[type="password"],
+input[type="number"] {
     flex: 1;
     padding: 0.6rem 1rem;
     font-size: 1rem;
-    border: 1px solid #c0c4cc;
-    border-radius: 8px;
+    border: 3px solid #000;
+    border-radius: 6px;
     outline: none;
     transition: border 0.2s;
+    font-family: inherit;
 }
 
 input[type="number"]:focus,
 input[type="text"]:focus,
 input[type="password"]:focus {
-    border-color: #3088ff;
+    border-color: #ff005c;
 }
 
 button {
     padding: 0.6rem 1.2rem;
-    background: linear-gradient(90deg,#c4b10f,#fad264);
+    background: #ff005c;
     color: #fff;
-    border: none;
-    border-radius: 8px;
-    font-weight: 600;
+    border: 3px solid #000;
+    border-radius: 6px;
+    font-weight: 700;
     cursor: pointer;
-    transition: background 0.2s, box-shadow 0.2s;
-    box-shadow: 0 2px 8px 0 rgba(44,62,80,.08);
+    transition: transform 0.1s, box-shadow 0.1s, background 0.2s;
+    box-shadow: 3px 3px 0 #000;
+    font-family: inherit;
 }
 
 button:hover, button:focus {
-    background: linear-gradient(90deg,#2475e4,#3dc5fc);
+    background: #ffe600;
+    color: #000;
+}
+
+button:active {
+    transform: translate(3px, 3px);
+    box-shadow: 0 0 0 #000;
 }
 
 #filmsTable {
@@ -72,26 +86,22 @@ button:hover, button:focus {
 
 #filmsTable th, #filmsTable td {
     padding: 0.8rem;
-    border-bottom: 1px solid #eef1f6;
+    border: 3px solid #000;
     text-align: left;
 }
 
 #filmsTable th {
-    background: #f0f4fa;
-    font-weight: 700;
-}
-
-#filmsTable tr:last-child td {
-    border-bottom: none;
+    background: #93c5fd;
 }
 
 .badge {
-    background: #d2c01c;
-    color: #fff;
+    background: #fffb00;
+    color: #000;
     padding: 0.25rem 0.65rem;
-    border-radius: 10px;
+    border-radius: 6px;
     font-size: 0.92em;
     letter-spacing: 0.5px;
+    border: 2px solid #000;
 }
 
 .success, .error {
@@ -103,18 +113,17 @@ button:hover, button:focus {
     border-radius: 7px;
     font-size: 1rem;
     display: block;
+    border: 3px solid #000;
 }
 
 .success {
-    background: #e9f8ea;
-    color: #23a137;
-    border: 1px solid #bde4c3;
+    background: #d1fadf;
+    color: #065f46;
 }
 
 .error {
-    background: #ffefef;
-    color: #d12d2d;
-    border: 1px solid #f5cccc;
+    background: #fee2e2;
+    color: #991b1b;
 }
 
 body.auth-page {
@@ -163,6 +172,13 @@ body.auth-page {
 
 .hidden {
     display: none !important;
+}
+
+#logoutBtn {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
 }
 
 @media (max-width: 480px) {
