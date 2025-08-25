@@ -81,7 +81,11 @@ const API = (function() {
         tbody.innerHTML = '';
         clearMessage();
 
-        fetch(API_URL)
+        fetch(API_URL, {
+            headers: {
+                'Authorization': `Bearer ${jwtToken}`
+            }
+        })
             .then(handleResponse)
             .then(data => {
                 data.forEach((film, idx) => {
@@ -103,6 +107,28 @@ const API = (function() {
         return false;
     }
 
+    function clearFilms() {
+        const table = document.getElementById('filmsTable');
+        const tbody = table.querySelector('tbody');
+        clearMessage();
+
+        fetch(API_URL, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${jwtToken}`
+            }
+        })
+            .then(handleResponse)
+            .then(() => {
+                tbody.innerHTML = '';
+                table.classList.add('hidden');
+                showMessage('Films cleared successfully');
+            })
+            .catch(err => showMessage(err.message || err, true));
+
+        return false;
+    }
+
     function logout() {
         localStorage.removeItem('token');
         jwtToken = '';
@@ -112,6 +138,7 @@ const API = (function() {
     return {
         createFilm,
         getFilms,
+        clearFilms,
         logout
     };
 })();
