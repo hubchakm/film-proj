@@ -10,19 +10,7 @@
 <body>
     <div class="container">
         <h1>Film Ratings Manager</h1>
-        <form id="loginForm" onsubmit="return API.login()">
-            <input type="text" id="loginUsername" placeholder="Username" required autocomplete="off">
-            <input type="password" id="loginPassword" placeholder="Password" required>
-            <button type="submit">Login</button>
-        </form>
-
-        <form id="registerForm" onsubmit="return API.register()">
-            <input type="text" id="regName" placeholder="Name" required autocomplete="off">
-            <input type="text" id="regUsername" placeholder="Username" required autocomplete="off">
-            <input type="password" id="regPassword" placeholder="Password" required>
-            <button type="submit">Register</button>
-        </form>
-
+        <button id="logoutBtn" onclick="API.logout()">Logout</button>
         <div id="successMessage" class="hidden"></div>
 
         <form id="filmForm" onsubmit="return API.createFilm()">
