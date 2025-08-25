@@ -98,9 +98,7 @@ window.API = (function() {
                     row.innerHTML = `
                         <td>${idx + 1}</td>
                         <td>${film.title}</td>
-                        <td><span class="badge">${film.rating}/10</span>$
-                            {jwtToken ? ` <button class="edit-btn" data-id="${film._id}" data-rating="${film.rating}">Edit</button>` : ''}
-                        </td>
+                        <td><span class="badge">${film.rating}/10</span>${jwtToken ? ` <button class="edit-btn" data-id="${film._id}" data-rating="${film.rating}">Edit</button>` : ''}</td>
                     `;
                     tbody.appendChild(row);
                 });
