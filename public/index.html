@@ -8,9 +8,9 @@
     <script type="text/javascript" src="./films.js" defer></script>
 </head>
 <body>
+    <button id="logoutBtn" onclick="API.logout()">Logout</button>
     <div class="container">
         <h1>Film Ratings Manager</h1>
-        <button id="logoutBtn" onclick="API.logout()">Logout</button>
         <div id="successMessage" class="hidden"></div>
 
         <form id="filmForm" onsubmit="return API.createFilm()">
