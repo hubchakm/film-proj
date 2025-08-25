@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Film Ratings</title>
+    <link rel="stylesheet" href="stylesheets/style.css">
+    <script type="text/javascript" src="./films.js" defer></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Film Ratings Manager</h1>
+        
+        <form id="filmForm" onsubmit="return API.createFilm()">
+            <input 
+                type="text" 
+                id="filmTitle" 
+                placeholder="Enter film title"
+                required
+                autocomplete="off"
+            >
+            <input
+                type="number"
+                id="filmRating"
+                min="1"
+                max="10"
+                step="1"
+                value="10"
+                required
+                style="width:80px;"
+            >
+            <label for="filmRating" style="margin-left:5px;">/10</label>
+            <button type="submit">Add Film</button>
+        </form>
+        <div id="successMessage" class="hidden"></div>
+        
+        <form id="getFilmsForm" onsubmit="return API.getFilms()">
+            <button type="submit">Get Films</button>
+        </form>
+        
+        <table id="filmsTable" class="hidden">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Film Title</th>
+                    <th>Rating</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</body>
+</html>
