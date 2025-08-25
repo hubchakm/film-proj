@@ -18,8 +18,13 @@ const API = (function() {
     const API_URL = `${API_BASE}/films`;
     let jwtToken = localStorage.getItem('token') || '';
 
+    const logoutBtn = document.getElementById('logoutBtn');
     if (!jwtToken) {
-        window.location.href = 'login.html';
+        if (logoutBtn) logoutBtn.classList.add('hidden');
+        const filmForm = document.getElementById('filmForm');
+        const clearForm = document.getElementById('clearFilmsForm');
+        if (filmForm) filmForm.classList.add('hidden');
+        if (clearForm) clearForm.classList.add('hidden');
     }
 
     async function handleResponse(res) {
@@ -81,11 +86,9 @@ const API = (function() {
         tbody.innerHTML = '';
         clearMessage();
 
-        fetch(API_URL, {
-            headers: {
-                'Authorization': `Bearer ${jwtToken}`
-            }
-        })
+        const headers = jwtToken ? { 'Authorization': `Bearer ${jwtToken}` } : {};
+
+        fetch(API_URL, { headers })
             .then(handleResponse)
             .then(data => {
                 data.forEach((film, idx) => {
@@ -93,10 +96,17 @@ const API = (function() {
                     row.innerHTML = `
                         <td>${idx + 1}</td>
                         <td>${film.title}</td>
-                        <td><span class="badge">${film.rating}/10</span></td>
+                        <td><span class="badge">${film.rating}/10</span>$
+                            {jwtToken ? ` <button class="edit-btn" data-id="${film._id}" data-rating="${film.rating}">Edit</button>` : ''}
+                        </td>
                     `;
                     tbody.appendChild(row);
                 });
+                if (jwtToken) {
+                    tbody.querySelectorAll('.edit-btn').forEach(btn => {
+                        btn.addEventListener('click', () => updateFilm(btn.dataset.id, btn.dataset.rating));
+                    });
+                }
                 table.classList.remove('hidden');
             })
             .catch(err => {
@@ -129,6 +139,37 @@ const API = (function() {
         return false;
     }
 
+    function updateFilm(id, currentRating) {
+        clearMessage();
+        if (!jwtToken) {
+            showMessage('Please login to update films.', true);
+            return;
+        }
+        const ratingRaw = prompt('Enter new rating (1-10):', currentRating);
+        if (ratingRaw === null) {
+            return;
+        }
+        const rating = parseInt(ratingRaw, 10);
+        if (isNaN(rating) || rating < 1 || rating > 10) {
+            showMessage('Please provide a rating between 1 and 10.', true);
+            return;
+        }
+        fetch(`${API_URL}/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${jwtToken}`
+            },
+            body: JSON.stringify({ rating })
+        })
+            .then(handleResponse)
+            .then(() => {
+                showMessage('Film rating updated successfully');
+                getFilms();
+            })
+            .catch(err => showMessage(err.message || err, true));
+    }
+
     function logout() {
         localStorage.removeItem('token');
         jwtToken = '';
@@ -139,7 +180,8 @@ const API = (function() {
         createFilm,
         getFilms,
         clearFilms,
-        logout
+        logout,
+        updateFilm
     };
 })();
 
