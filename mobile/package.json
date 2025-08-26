@@ -9,11 +9,11 @@
     "postinstall": "patch-package"
   },
   "dependencies": {
-    "expo": "^50.0.0",
+    "expo": "^50.0.21",
     "expo-status-bar": "~1.11.1",
     "patch-package": "^8.0.0",
     "react": "18.2.0",
-    "react-native": "0.74.0"
+    "react-native": "^0.74.3"
   },
   "devDependencies": {
     "metro": "^0.81.0"
