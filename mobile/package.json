@@ -13,7 +13,7 @@
     "expo-status-bar": "~1.11.1",
     "patch-package": "^8.0.0",
     "react": "18.2.0",
-    "react-native": "^0.74.3"
+    "react-native": "^0.73.6"
   },
   "devDependencies": {
     "metro": "^0.81.0"
