@@ -1,0 +1,7 @@
+{
+  "expo": {
+    "android": {
+      "permissions": ["DETECT_SCREEN_CAPTURE"]
+    }
+  }
+}
