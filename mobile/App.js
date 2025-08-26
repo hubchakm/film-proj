@@ -1,7 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { SafeAreaView, View, Text, TextInput, Button, FlatList, Alert } from 'react-native';
+import {
+  SafeAreaView,
+  View,
+  Text,
+  TextInput,
+  Button,
+  FlatList,
+  Alert,
+  ScrollView,
+  TouchableOpacity,
+  StyleSheet,
+  Platform
+} from 'react-native';
 
-const API_BASE = 'http://YOUR_IP:8080/api/v1';
+// Default to the Android emulator host (10.0.2.2) so the app works
+// immediately on Pixel 9a or similar emulators. Adjust this base URL
+// if testing on a physical device or different network.
+const API_BASE = `${Platform.OS === 'android' ? 'http://10.0.2.2:8080' : 'http://localhost:8080'}/api/v1`;
 
 export default function App() {
   const [token, setToken] = useState('');
@@ -28,7 +43,9 @@ export default function App() {
     }
   };
 
-  useEffect(() => { loadFilms(); }, [token]);
+  useEffect(() => {
+    loadFilms();
+  }, [token]);
 
   const login = async () => {
     try {
@@ -45,6 +62,20 @@ export default function App() {
     }
   };
 
+  const register = async () => {
+    try {
+      const res = await fetch(`${API_BASE}/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+      await handleResponse(res);
+      Alert.alert('Success', 'Account created');
+    } catch (err) {
+      Alert.alert('Error', err.message);
+    }
+  };
+
   const addFilm = async () => {
     if (!token) {
       Alert.alert('Login required');
@@ -53,7 +84,10 @@ export default function App() {
     try {
       const res = await fetch(`${API_BASE}/films`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
         body: JSON.stringify({ title, rating })
       });
       await handleResponse(res);
@@ -65,18 +99,15 @@ export default function App() {
     }
   };
 
-  const updateRating = async id => {
+  const removeFilm = async id => {
     if (!token) {
       Alert.alert('Login required');
       return;
     }
-    const newRating = prompt('New rating 1-10');
-    if (newRating === null) return;
     try {
       const res = await fetch(`${API_BASE}/films/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ rating: newRating })
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` }
       });
       await handleResponse(res);
       loadFilms();
@@ -86,33 +117,119 @@ export default function App() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, padding: 20 }}>
-      <View style={{ marginBottom: 20 }}>
-        <Text>Username</Text>
-        <TextInput value={username} onChangeText={setUsername} autoCapitalize='none' style={{ borderWidth:1, marginBottom:8 }} />
-        <Text>Password</Text>
-        <TextInput value={password} onChangeText={setPassword} secureTextEntry style={{ borderWidth:1, marginBottom:8 }} />
-        <Button title="Login" onPress={login} />
-      </View>
-
-      <View style={{ marginBottom: 20 }}>
-        <Text>Title</Text>
-        <TextInput value={title} onChangeText={setTitle} style={{ borderWidth:1, marginBottom:8 }} />
-        <Text>Rating</Text>
-        <TextInput value={rating} onChangeText={setRating} keyboardType='numeric' style={{ borderWidth:1, marginBottom:8 }} />
-        <Button title="Add Film" onPress={addFilm} />
-      </View>
-
-      <FlatList
-        data={films}
-        keyExtractor={item => item._id}
-        renderItem={({ item }) => (
-          <View style={{ marginBottom: 10 }}>
-            <Text>{item.title} - {item.rating}/10</Text>
-            {token ? <Button title="Edit" onPress={() => updateRating(item._id)} /> : null}
+    <SafeAreaView style={styles.container}>
+      <ScrollView contentContainerStyle={styles.content}>
+        <Text style={styles.header}>Film Ratings</Text>
+        <View style={styles.authSection}>
+          <TextInput
+            placeholder="Username"
+            value={username}
+            onChangeText={setUsername}
+            autoCapitalize="none"
+            style={styles.input}
+          />
+          <TextInput
+            placeholder="Password"
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry
+            style={styles.input}
+          />
+          <View style={styles.authButtons}>
+            <Button title="Login" onPress={login} />
+            <Button title="Register" onPress={register} />
           </View>
-        )}
-      />
+        </View>
+
+        <View style={styles.addSection}>
+          <TextInput
+            placeholder="Film title"
+            value={title}
+            onChangeText={setTitle}
+            style={styles.input}
+          />
+          <TextInput
+            placeholder="Rating"
+            value={rating}
+            onChangeText={setRating}
+            keyboardType="numeric"
+            style={styles.input}
+          />
+          <Button title="Add Film" onPress={addFilm} />
+        </View>
+
+        <FlatList
+          data={films}
+          keyExtractor={item => item._id}
+          renderItem={({ item }) => (
+            <View style={styles.filmItem}>
+              <Text style={styles.filmText}>
+                {item.title} - {item.rating}/10
+              </Text>
+              {token ? (
+                <TouchableOpacity
+                  onPress={() => removeFilm(item._id)}
+                  style={styles.deleteButton}
+                >
+                  <Text style={styles.buttonText}>Delete</Text>
+                </TouchableOpacity>
+              ) : null}
+            </View>
+          )}
+        />
+      </ScrollView>
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fafafa'
+  },
+  content: {
+    padding: 20
+  },
+  header: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    textAlign: 'center'
+  },
+  authSection: {
+    marginBottom: 30
+  },
+  authButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 10
+  },
+  addSection: {
+    marginBottom: 30
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    padding: 8,
+    marginBottom: 10,
+    borderRadius: 4
+  },
+  filmItem: {
+    marginBottom: 15,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center'
+  },
+  filmText: {
+    fontSize: 16
+  },
+  deleteButton: {
+    backgroundColor: '#e74c3c',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 4
+  },
+  buttonText: {
+    color: '#fff'
+  }
+});

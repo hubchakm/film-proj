@@ -51,7 +51,7 @@ listing films, adding new films and updating ratings.
    npm start
    ```
 3. When prompted, open the app on your mobile device using the Expo Go app or an emulator.
-4. Edit `mobile/App.js` and replace `YOUR_IP` in `API_BASE` with the IP address of your computer so the app can reach the API.
+4. By default the app targets `10.0.2.2`, allowing Android Studio emulators like the Pixel 9a to reach the API. If you are testing on a different device, edit `mobile/App.js` and adjust `API_BASE` to point to your computer's IP address.
 
 
 ## Project Structure
