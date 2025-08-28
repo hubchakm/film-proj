@@ -39,19 +39,47 @@ To use the site or API from phones or other computers on your local network:
 
 The API base URL for mobile apps should also use the IP address, e.g. `http://YOUR_IP:8080/api/v1`.
 
-## Mobile App
-A minimal React Native client is provided in the `mobile/` directory. It allows logging in,
-listing films, adding new films and updating ratings.
+## Mobile App (Expo + Development Build)
+
+A React Native client lives in `mobile/`. It uses **expo-router** for navigation (Login, Register, Films).
+
+### Prerequisites
+- Node.js 18+
+- Android Studio (for the emulator) with:
+  - Android SDK Platform 35 and Build-Tools 35.0.0
+  - Android SDK Command-line Tools (latest)
+- JDK 17 (Android Studio’s bundled JBR works)
+- Expo CLI (we use `npx @expo/cli` below)
+
+### Configure API base
+The app points at the backend via:
+- Android emulator: `http://10.0.2.2:8080/api/v1` (works out of the box)
+- Physical device on same Wi-Fi: use your computer’s IP, e.g. `http://YOUR_IP:8080/api/v1`
+
+If you need to change it, edit `mobile/app/_layout.tsx` and update `API_BASE`.
+
+### First-time setup (Android)
+```bash
+cd mobile
+npm install
+
+
+# Install a development client (so your native modules match)
+npx @expo/cli install expo-dev-client
+
+# Generate native android project and build the dev client
+npx @expo/cli prebuild --platform android
+npx @expo/cli run:android
+```
 
 ### Running the app
-1. Install [Node.js](https://nodejs.org/) and [Expo](https://docs.expo.dev/get-started/installation/).
-2. In the `mobile` folder run:
+1. In the `mobile` folder run:
    ```bash
-   npm install
-   npm start
+   cd mobile
+   npx @expo/cli start -c
    ```
-3. When prompted, open the app on your mobile device using the Expo Go app or an emulator.
-4. By default the app targets `10.0.2.2`, allowing Android Studio emulators like the Pixel 9a to reach the API. If you are testing on a different device, edit `mobile/App.js` and adjust `API_BASE` to point to your computer's IP address.
+2. When prompted, open the app on your mobile device using developer mode with (a) option.
+3. By default the app targets `10.0.2.2`, allowing Android Studio emulators like the Pixel 9a to reach the API. If you are testing on a different device, edit `mobile/` and adjust `API_BASE` to point to your computer's IP address.
 
 
 ## Project Structure

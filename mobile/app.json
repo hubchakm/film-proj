@@ -1,7 +1,21 @@
 {
   "expo": {
+    "name": "film-mobile",
+    "slug": "film-mobile",
+    "version": "1.0.0",
+    "sdkVersion": "52.0.0",
+    "platforms": [
+      "ios",
+      "android"
+    ],
     "android": {
-      "permissions": ["DETECT_SCREEN_CAPTURE"]
-    }
+      "package": "com.hub.filmmobile",
+      "permissions": [
+        "android.permission.DETECT_SCREEN_CAPTURE"
+      ]
+    },
+    "plugins": [
+      "expo-font"
+    ]
   }
 }
