@@ -18,6 +18,7 @@ all services are available through a single port.
    ```
 3. Open your browser to [http://localhost:8080](http://localhost:8080) to use the web interface.
    - API calls are available via [http://localhost:8080/api/v1/films](http://localhost:8080/api/v1/films)
+   - Delete a specific film by sending a `DELETE` request to `/api/v1/films/:id` with a valid token
    - The web service is also exposed on port `3000` and the films API on port `3001` for direct access.
 4. When you are finished, stop the containers with `Ctrl+C` and run:
    ```bash

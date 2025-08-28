@@ -125,6 +125,18 @@ app.put('/api/v1/films/:id', verifyToken, async (req, res) => {
   }
 });
 
+app.delete('/api/v1/films/:id', verifyToken, async (req, res) => {
+  try {
+    const film = await Film.findOneAndDelete({ _id: req.params.id, user: req.user.username });
+    if (!film) {
+      return res.status(404).json({ message: 'Film not found' });
+    }
+    res.json({ message: 'Film deleted successfully' });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 app.post('/api/v1/register', async (req, res) => {
   const { name, username, password } = req.body;
   if (!name || !username || !password) {
