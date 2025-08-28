@@ -20,6 +20,10 @@ export default function FilmsScreen() {
     try {
       const headers = token ? { Authorization: `Bearer ${token}` } : {};
       const res = await fetch(`${apiBase}/films`, { headers });
+      if (res.status === 404) {
+        setFilms([]);
+        return;
+      }
       const data = await handleResponse(res);
       setFilms(Array.isArray(data) ? data : []);
     } catch (err: any) {

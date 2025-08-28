@@ -7,6 +7,7 @@ import { handleResponse } from '../lib/api';
 export default function Register() {
   const router = useRouter();
   const { apiBase } = useContext(AuthContext);
+  const [name, setName] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
@@ -14,7 +15,7 @@ export default function Register() {
     try {
       const res = await fetch(`${apiBase}/register`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ name, username, password }),
       });
       await handleResponse(res);
       Alert.alert('Success', 'Account created');
@@ -27,6 +28,7 @@ export default function Register() {
   return (
     <View style={styles.wrap}>
       <Text style={styles.h1}>Register</Text>
+      <TextInput placeholder="Name" value={name} onChangeText={setName} style={styles.input} />
       <TextInput placeholder="Username" value={username} onChangeText={setUsername} autoCapitalize="none" style={styles.input} />
       <TextInput placeholder="Password" value={password} onChangeText={setPassword} secureTextEntry style={styles.input} />
       <Button title="Create Account" onPress={submit} />
